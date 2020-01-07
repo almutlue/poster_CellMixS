@@ -1,0 +1,489 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta charset="utf-8" />
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="generator" content="pandoc" />
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+
+
+<title>Explore data integration and batch effects</title>
+
+
+
+
+
+
+<!--
+Font-awesome icons ie github or twitter
+-->
+<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.1/css/all.css" integrity="sha384-50oBUHEmvpQ+1lW4y57PTFmhCaXp0ML5d60M1M7uH2+nqUivzIebhndOJK28anvf" crossorigin="anonymous">
+<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.1/css/brands.css" integrity="sha384-n9+6/aSqa9lBidZMRCQHTHKJscPq6NW4pCQBiMmHdUCvPN8ZOg2zJJTkC7WIezWv" crossorigin="anonymous">
+
+<!--
+Google fonts api stuff
+-->
+<link href='https://fonts.googleapis.com/css?family=Special Elite' rel='stylesheet'>
+<link href='https://fonts.googleapis.com/css?family=Rasa' rel='stylesheet'>
+
+<!--
+Here are the required style attributes for css to make this poster work :)
+-->
+<style>
+@page {
+size: 33.11in 46.81in;
+margin: 0;
+padding: 0;
+}
+body {
+margin: 0px;
+padding: 0px;
+width: 33.11in;
+height: 46.81in;
+text-align: justify;
+font-size: 45px;
+line-height: 1.05;
+}
+/* RMarkdown Class Styles */
+/* center align leaflet map,
+from https://stackoverflow.com/questions/52112119/center-leaflet-in-a-rmarkdown-document */
+.html-widget {
+margin: auto;
+position: sticky;
+margin-top: 2cm;
+margin-bottom: 2cm;
+}
+.leaflet.html-widget.html-widget-static-bound.leaflet-container.leaflet-touch.leaflet-fade-anim.leaflet-grab.leaflet-touch-drag.leaflet-touch-zoom {
+position: sticky;
+width: 100%;
+}
+pre.sourceCode.r {
+background-color: #dddddd40;
+border-radius: 4mm;
+padding: 4mm;
+width: 75%;
+margin: auto;
+margin-top: 1em;
+margin-bottom: 1em;
+/* align-items: center; */
+}
+code.sourceCode.r{
+background-color: transparent;
+font-size: 20pt;
+border-radius: 2mm;
+}
+code {
+font-size: 25pt;
+font-family: monospace;
+background-color: #9A8FDC24;
+color: #1A2E47;
+padding: 1.2mm;
+line-height: 1;
+border-radius: 2mm;
+}
+caption {
+margin-bottom: 10px;
+font-size: 20pt;
+font-style: italic;
+}
+
+tbody tr:nth-child(odd) {
+    background-color: #9A8FDC20;
+}
+.table>thead>tr>th, .table>tbody>tr>th, .table>tfoot>tr>th, .table>thead>tr>td, .table>tbody>tr>td, .table>tfoot>tr>td{
+  border-spacing: 0;
+  font-size: 40%;
+  border-style: none;
+  padding-top: 15px;
+  padding-bottom: 15px;
+  padding-right: 1em;
+  padding-left: 1em;
+  line-height: 1em;
+}
+table {
+  margin: auto;
+}
+th {
+  padding-left: 5mm;
+  padding-right: 5mm;
+}
+.caption {
+font-size: 20pt;
+font-style: italic;
+padding-top: 0;
+}
+.references {
+font-size: 27px;
+line-height: 90%;
+}
+/* Create three unequal columns that floats next to each other */
+.column {
+float: left;
+padding: 0px;
+}
+.outer {
+width: 33.11in;
+height: calc(46.81in *  (1 - 0.2 - 8.0e-2 - 0.01) );
+-webkit-column-count: 3; /* Chrome, Safari, Opera */
+-moz-column-count: 3; /* Firefox */
+column-count: 3;
+-webkit-column-fill: auto;
+-moz-column-fill: auto;
+column-fill: auto;
+column-gap: 0;
+padding-left: 0cm;
+padding-right: 0cm;
+/* -webkit-column-rule-width: 50%;
+-moz-column-rule-width: 50%;
+column-rule-width: 50%; */
+-webkit-column-rule-style: none;
+-moz-column-rule-style: none;
+column-rule-style: none;
+-webkit-column-rule-color: black;
+-moz-column-rule-color: black;
+column-rule-color: black;
+background-color: #ffffff;
+font-family: Rasa;
+margin-top: calc(46.81in *  0.2 );
+padding-top: 1em;
+padding-bottom: 1em;
+}
+span.citation {
+  color: #9A8FDC;
+  font-weight: bold;
+}
+a {
+text-decoration: none;
+color: #9A8FDC;
+}
+#title {
+font-size: 125pt;
+text-align: left;
+margin: 0;
+line-height: 98%;
+border-bottom: 0;
+font-weight: normal;
+background: 0;
+}
+#author {
+color: #1A2E47;
+margin: 0;
+line-height: 85%;
+font-size: 1.17em;
+}
+#affiliation {
+padding-top: 0.1em;
+color: ;
+font-style: italic;
+font-size: 25px;
+margin: 0;
+}
+sup {
+color: #B68204;
+}
+.affiliation sup {
+font-size: 20px;
+}
+.author {
+text-align: left;
+}
+.author sup {
+font-size: 30px;
+}
+.author_extra {
+color: #9A8FDC;
+margin: 0;
+line-height: 85%;
+font-size: 35px;
+text-align: left;
+}
+.outer h1, h2, h3, h4, h5, h6 {
+text-align: center;
+margin: 0;
+font-weight: bold;
+}
+.section h1 {
+  text-align:center;
+  padding-bottom:5px;
+  background:
+    linear-gradient(
+      to left,
+      #ffffff 1%,
+      #ffffff 20%,
+      #1A2E4775 33%,
+      #1A2E47 50%,
+      #1A2E4775 66%,
+      #ffffff 80%,
+      #ffffff 99%
+    )
+    left
+    bottom
+    #ffffff
+    no-repeat;
+  background-size:100% 5px ;
+  margin-top: 0.5em;
+  margin-bottom: 0.5em;
+}
+.outer h2 {
+text-align: center;
+}
+.outer p, .level2 {
+color: #000000;
+}
+.outer ol {
+padding-left: 8%;
+padding-right: 8%;
+text-align: left;
+}
+.main {
+width: 33.11in;
+height: calc(46.81in * 0.2);
+position: absolute;
+background-color: #1A2E47;
+color: #ffffff90;
+font-family: Special Elite;
+background-image: linear-gradient(#1A2E47 50%,#9A8FDC);
+}
+.main strong {
+color: #ffffff;
+}
+.main strong > sup {
+color: #ffffff;
+}
+.main sup {
+color: #ffffff90;
+}
+#main-img-left {
+width: 10%;
+left: 0.5in;
+bottom: 0.2in;
+position: absolute;
+}
+#main-img-center {
+width: 10%;
+left: calc(33.11in * 0.45);
+bottom: 0.5in;
+position: absolute;
+}
+#main-img-right {
+width: 10%;
+right: 0.5in;
+bottom: 0.2in;
+position: absolute;
+}
+.main p {
+font-size: 150px;
+font-family: Special Elite;
+text-align: center;
+margin: 0;
+position: absolute;
+top: 50%;
+-ms-transform: translateY(-50%);
+transform: translateY(-50%);
+margin-left: 1em;
+}
+.fab {
+color: #00000030;
+font-size: 25px;
+}
+.twitter, i {
+color: #00000030;
+font-size: 35px;
+text-decoration: none;
+}
+a.email {
+text-decoration: none;
+color: #00000030;
+font-size: 35px;
+}
+.envelope {
+color: #00000030;
+font-size: 5px;
+text-decoration: none;
+}
+.poster_wrap {
+width: 33.11in;
+height: 46.81in;
+padding: 0cm;
+}
+.main_bottom {
+width: 33.11in;
+height: calc(46.81in * 8.0e-2);
+margin-top: calc(46.81in * (1 - 8.0e-2));
+position: absolute;
+background-color: #1A2E47;
+background-image: linear-gradient(#9A8FDC 10%, #1A2E47);
+}
+.section {
+  padding-left: 10mm;
+  padding-right: 10mm;
+}
+span > #tab:mytable {
+  font-weight: bold;
+}
+.orcid img {
+  width: 3%;
+}
+.emphasis {
+  background-color: #008080;
+  color: #ffffff;
+  border: solid #0b2045 3mm;
+  margin: 1em;
+  padding-left: 0;
+  padding-right: 0;
+}
+.emphasis h1 {
+  font-weight: bold;
+  background: none;
+  background-color: #0b2045;
+  padding-bottom: 5mm;
+  padding-top: 1mm;
+  margin-top: -1mm;
+  margin-right: -1mm;
+  margin-left: -1mm;
+}
+.emphasis blockquote {
+  border: 0;
+}
+.emphasis ol {
+  padding: 0;
+  padding-left: 8%;
+  font-size: 100%;
+  font-weight: bold;
+}
+.emphasis p {
+  color: #ffffff;
+}
+</style>
+</head>
+<body>
+
+
+<div class="poster_wrap">
+
+<div class="column outer">
+<div class="section">
+<h1 id="title">Explore <strong>data integration</strong> and <strong>batch effects</strong></h1><br>
+<h3 id="author" class="author">
+
+<strong>Almut Luetge</strong><sup> 1</sup><br>
+<a class="twitter" href="https://mobile.twitter.com/Almut30618742"><i class="fab fa-twitter"></i>&nbsp;&nbsp;@Almut30618742</a><br>
+
+<a class='envelope'><i class="fas fa-envelope"></i></a> <a href="mailto:almut.luetge@uzh.ch">almut.luetge@uzh.ch</a> <br>
+ Mark D. Robinson<sup> 1</sup><br>
+
+<a class='envelope'><i class="fas fa-envelope"></i></a> <a href="mailto:mark.robinson@imls.uzh.ch">mark.robinson@imls.uzh.ch</a> <br>
+</h3>
+
+<h5 id="author_extra", class="author_extra">
+ </h5>
+
+
+<p id="affiliation" class="affiliation">
+<sup>1</sup> Institute for Molecular Life Sciences, University of Zurich, Switzerland<br> <sup>1</sup> SIB Swiss Institute of Bioinformatics, Switzerland
+</p>
+</div>
+
+<style>
+#main-img-left {
+ width: 15%;
+}
+#main-img-center {
+ width: 7%;
+}
+#main-img-right {
+ width: 10%;
+}
+</style>
+<div id="introduction" class="section level1">
+<h1>Introduction</h1>
+<p>Technological advances resulted in a rise of <strong>single cell RNAseq (scRNA-seq)</strong> data sets. As with other high-throughput technologies <code>batch effects</code> are a major challenge. In scRNA-seq analysis this is particular striking as major analysis steps (e.g. clustering) are not model dependent and a huge potential in this great ressource is in the <code>integration</code> of different data sets and modalities.</p>
+<div id="objectives" class="section level2">
+<h2>Objectives</h2>
+<ol style="list-style-type: decimal">
+<li>Detection of batch effects and biases in scRNA-seq data.</li>
+<li>Evaluation and comparison of data integration (e.g. after batch effect correction).</li>
+</ol>
+</div>
+</div>
+<div id="methods" class="section level1">
+<h1>Methods</h1>
+<p><strong><code>Cellspecific Mixing Score (CMS)</code></strong>:<br />
+A test for batch effects within k-nearest neighbours (knn):</p>
+<ul>
+<li>independent of clustering<br />
+</li>
+<li>independet of batch compositions</li>
+</ul>
+<p>Tests for each cell the hypothesis that batch-specific distance distributions towards it’s knn cells are derived from the same unspecified underlying distribution using the <em>Anderson-Darling test</em> <span class="citation">(Scholz and Stephens <a href="#ref-Scholz1987">1987</a>)</span>.</p>
+<p><strong><code>Local density factor differences (ldfDiff)</code></strong>:<br />
+A test for the data’s internal structure and variability preservation (removal of biological signal or random addition of a signal):</p>
+<ul>
+<li>independent of clustering<br />
+</li>
+<li>comparable and interpretable</li>
+</ul>
+<p>Tests differences between each cell’s local density factor before and after data integration <span class="citation">(Latecki, Lazarevic, and Pokrajac <a href="#ref-Latecki2007">2007</a>)</span>.</p>
+</div>
+<div id="results" class="section level1">
+<h1>Results</h1>
+<p><code>Cellspecific mixing scores</code> of a distinct patient batch effect: Some celltypes form separated cluster per patient and others show one well mixed cluster. <img src="figures/batch_pat.png" width="70%" style="display: block; margin: auto;" /></p>
+<p>Cellspecific mixing scores (cms) capture patient mixing. Celltypes that subcluster by patient get a score close to 0, while the cms increases with batch mixing.</p>
+<p><img src="figures/cms_pat.png" width="70%" style="display: block; margin: auto;" /></p>
+<p>Differences between celltypes can not always be spotted as easily as above, but they get apparend when looking at the score distributions:</p>
+<p><img src="figures/cms_byct_2__2_0.5.png" width="80%" height="70%" style="display: block; margin: auto;" /></p>
+<p>The <code>cellspecific mixing score</code> can be interpreted as the data’s probability within an equally mixed neighbourhood. Data with a batch bias show an accumulation of low p-values, while a randomly distributed batch variable results in a flat score (p-value) distribution. This can be shown by percentwise increasing the amount of randomly assigned batch label. The p-value histogram flatens with increased randomness in the batch variable.</p>
+<p><img src="figures/hist.png" width="100%" height="100%" style="display: block; margin: auto;" /></p>
+</div>
+<div id="conclusion" class="section level1">
+<h1>Conclusion</h1>
+<p>CellMixS is a tool set to evaluate and visualize data integration and batch effects in single-cell RNA-seq data.</p>
+<p>Main features:</p>
+<ul>
+<li><p><strong>Quantify (batch-) mixing</strong>:</p>
+<ul>
+<li>Cellspecific<br />
+</li>
+<li>Neighbourhood adjustment (Unbalanced batches!)</li>
+<li>Different metrics</li>
+</ul></li>
+<li><p><strong>Quantify structual changes upon integration</strong>:</p>
+<ul>
+<li>cellspecific</li>
+</ul></li>
+<li><p><strong>Visualize mixing</strong>:</p>
+<ul>
+<li>summarize and compare scores</li>
+</ul></li>
+</ul>
+<p><strong>CellMixS</strong> is available as an <strong><strong>Bioconductor</strong></strong> R package at <code>https://bioconductor.org/packages/release/bioc/html/CellMixS.html</code>.</p>
+<p><img src="figures/CellMixS.png" width="40%" height="40%" style="display: block; margin: auto;" /></p>
+</div>
+<div id="references" class="section level1 unnumbered">
+<h1>References</h1>
+<div id="refs" class="references">
+<div id="ref-Latecki2007">
+<p>Latecki, Longin Jan, Aleksandar Lazarevic, and Dragoljub Pokrajac. 2007. “Outlier Detection with Kernel Density Functions.” In <em>Mach. Learn. Data Min. Pattern Recognit.</em>, 61–75. Berlin, Heidelberg: Springer Berlin Heidelberg. doi:<a href="https://doi.org/10.1007/978-3-540-73499-4_6">10.1007/978-3-540-73499-4_6</a>.</p>
+</div>
+<div id="ref-Scholz1987">
+<p>Scholz, F. W., and M. A. Stephens. 1987. “K-Sample Anderson-Darling Tests.” <em>J. Am. Stat. Assoc.</em> 82 (399): 918. doi:<a href="https://doi.org/10.2307/2288805">10.2307/2288805</a>.</p>
+</div>
+</div>
+</div>
+
+</div>
+<div class="main">
+<p><strong>CellMixS</strong> - Batch quantification with single cell resolution.</p>
+</div>
+<div class="main_bottom">
+<img id="main-img-left" src=figures/uzh_org-1.png>
+<img id="main-img-center" src=figures/bioc_cellmixs.png>
+<img id="main-img-right" src=figures/sib_org.png>
+</div>
+</div>
+
+
+
+</body>
+</html>
