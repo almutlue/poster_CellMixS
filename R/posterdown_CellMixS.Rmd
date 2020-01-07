@@ -5,29 +5,28 @@ main_bottomsize: 0.1
 title: '**CellMixS** - Explore data integration and batch effects'
 author:
   - name: '**Almut Luetge**'
-    affil: 1,2
+    affil: 1
     main: true
-    twitter: @Almut30618742 
+    twitter: Almut30618742 
     email: almut.luetge@uzh.ch
   - name: Mark D. Robinson
-    affil: 1,2
+    affil: 1
     main: true
     email: 'mark.robinson@imls.uzh.ch'
 affiliation:
   - num: 1
     address: Institute for Molecular Life Sciences, University of Zurich, Switzerland
-  - num: 2
+  - num: 1
     address: SIB Swiss Institute of Bioinformatics, Switzerland
 main_findings:
-  - "**batch quatification** with single cell resolution."
-logoleft_name: https&#58;//raw.githubusercontent.com/almutlue/poster_CellMixS/figures/CellMixS.png
-logoright_name: https&#58;//raw.githubusercontent.com/almutlue/poster_CellMixS/figures/uzh_logo_e_neg.eps
+  - "**Batch quatification** with single cell resolution."
+logoleft_name: https&#58;//raw.githubusercontent.com/almutlue/poster_CellMixS/master/figures/logo.jpg
 output: 
   posterdown::posterdown_betterport:
     self_contained: false
     pandoc_args: --mathjax
     number_sections: false
-bibliography: packages.bib
+bibliography: mixingMetric.bib
 link-citations: true
 ---
 
@@ -43,7 +42,8 @@ options(knitr.table.format = "html")
 
 # Introduction
 
-This is the `posterdown_betterport` template for the {posterdown} package! I was inspired by the twitter thread of [Mike Morrison](https://mobile.twitter.com/mikemorrison/status/1110191245035479041) and wanted to apply the `#betterposter` concept to the reproducible (yet simple to use) functionality of the {posterdown} package [@R-posterdown]. If you're not an R user don't sweat as you do **NOT** need to use it at all! Feel free to use only the Markdown functionality of this package :)
+Technological advances resulted in a rise of **single cell RNAseq (scRNA-seq)** data sets. 
+As with other high-throughput technologies `batch effects` are a major challenge. In scRNA-seq analysis this is particular striking as major analysis steps (e.g. clustering) are not model dependent and a huge potential in this great ressource is in the `integration` of different data sets and modalities. 
 
 ```{r, include=FALSE}
 knitr::write_bib(c('posterdown', 'rmarkdown','pagedown'), 'packages.bib')
@@ -51,60 +51,80 @@ knitr::write_bib(c('posterdown', 'rmarkdown','pagedown'), 'packages.bib')
 
 ## Objectives
 
-1. Pick a template layout.
-2. Write/ create your poster content distraction free.
-3. Let posterdown do its thing!
+1. Detection of batch effects and biases in scRNA-seq data.
+2. Evaluation and comparison of data integration (e.g. after batch effect correction).
 
 # Methods
 
-I will show here how to include poster elements that may be useful, such as an equation using mathjax:
+**`Cellspecific Mixing Score (CMS)`**:   
+A test for batch effects within k-nearest neighbours (knn):  
+  
+* independent of clustering  
+* independet of batch compositions  
 
-$$
-E = mc^2
-$$
+Tests for each cell the hypothesis that batch-specific distance distributions towards it’s knn cells are derived from the same unspecified underlying distribution using the _Anderson-Darling test_ [@Scholz1987].
 
-To reference a citation you can add your `.bib` file to the working directory and name it in the YAML metadata or generate an automated one as done here, then you only need to reference the label value in the `.bib` file. For example this package is built on top of the wonderful {pagedown} package and I will cite it at the end of this sentance using this in the rmd `[@R-pagedown]` [@R-pagedown].
 
-To get a better understanding of how to include features like these please refer to the {posterdown} [wiki](https://github.com/posterdown/wiki).
+**`Local density factor differences (ldfDiff)`**:   
+A test for the data’s internal structure and variability preservation (removal of biological signal or random addition of a signal):  
+  
+* independent of clustering  
+* comparable and interpretable  
+   
+Tests differences between each cell’s local density factor before and after data integration [@Latecki2007].
 
-**_Now on to the results!_**
 
 # Results
 
-Here you may have some figures to show off, bellow I have made a scatterplot with the infamous Iris dataset and I can even reference to the figure automatically like this, `Figure \@ref(fig:irisfigure)`, Figure \@ref(fig:irisfigure).
+`Cellspecific mixing scores` of a distinct patient batch effect: 
+Some celltypes form separated cluster per patient and others show one well mixed cluster. 
+```{r batch_effect, echo=FALSE, out.width="70%"}
+knitr::include_graphics("../figures/batch_pat.png")
+``` 
 
-```{r, irisfigure, fig.cap='Here is a caption for the figure. This can be added by using the "fig.cap" option in the r code chunk options, see this [link](https://yihui.name/knitr/options/#plots) from the legend himself, [Yihui Xie](https://twitter.com/xieyihui).', out.width="80%"}
-par(mar=c(2,2,0,1))
-plot(x = iris$Sepal.Length, y = iris$Sepal.Width,
-     col = iris$Species, pch = 19, xlab = "Sepal Length",
-     ylab = "Sepal Width")
-```
+Cellspecific mixing scores (cms) capture patient mixing. Celltypes that subcluster by patient get a score close to 0, while the cms increases with batch mixing.   
 
-Maybe you want to show off some of that fancy code you spent so much time on to make that figure, well you can do that too! Just use the `echo=TRUE` option in the r code chunk options, Figure \@ref(fig:myprettycode)!
+```{r cms_score, echo=FALSE, out.width="70%"}
+knitr::include_graphics("../figures/cms_pat.png")
+``` 
 
-```{r myprettycode, echo=TRUE, fig.cap='Boxplots, so hot right now!', fig.height=6, out.width="80%"}
-#trim whitespace
-par(mar=c(2,2,0,0))
-#plot boxplots
-boxplot(iris$Sepal.Width~iris$Species,
-        col = "#008080", 
-        border = "#0b4545",
-        ylab = "Sepal Width (cm)",
-        xlab = "Species")
-```
+Differences between celltypes can not always be spotted as easily as above, but they get apparend when looking at the score distributions:
 
-How about a neat table of data? See, Table \@ref(tab:iristable):
+```{r cms_by_celltype, echo=FALSE, out.height="70%", out.width="80%"}
+knitr::include_graphics("../figures/cms_byct_2__2_0.5.png")
+``` 
 
-```{r, iristable}
-knitr::kable(
-  iris[1:15,1:5], format = "html",
-  caption = "A table made with the **knitr::kable** function.",
-  align = "c", col.names = c("Sepal <br> Length",
-                             "Sepal <br> Width",
-                             "Petal <br> Length",
-                             "Petal <br> Width",
-                             "Species"),
-  escape = FALSE)
-```
+The `cellspecific mixing score` can be interpreted as the data’s probability within an equally mixed neighbourhood. Data with a batch bias show an accumulation of low p-values, while a randomly distributed batch variable results in a flat score (p-value) distribution. This can be shown by percentwise increasing the amount of randomly assigned batch label. The p-value histogram flatens with increased randomness in the batch variable. 
+
+```{r hist, echo=FALSE, out.height="100%", out.width="100%"}
+knitr::include_graphics("../figures/hist.png")
+``` 
+
+
+# Conclusion
+
+CellMixS is a tool set to evaluate and visualize data integration and batch effects in single-cell RNA-seq data.
+
+Main features:  
+
+* **Quantify (batch-) mixing**:  
+ 
+    + Cellspecific  
+    + Neighbourhood adjustment (Unbalanced batches!)
+    + Different metrics  
+    
+* **Quantify structual changes upon integration**:  
+ 
+    + cellspecific  
+    
+* **Visualize mixing**:  
+
+    + summarize and compare scores  
+
+**cellMixS** is available as an __**Bioconductor**__ R package at `https://bioconductor.org/packages/release/bioc/html/CellMixS.html`.
+
+```{r bioconductor, echo=FALSE, out.height="30%", out.width="30%"}
+knitr::include_graphics("../figures/CellMixS.png")
+``` 
 
 # References
